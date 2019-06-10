@@ -12,9 +12,15 @@ io.on('connection', function(socket) {
 });
 
 io.on('connection', function(socket) {
+    //socket.on('Девочки', function(message) {
+    //    messageId ++;
+    //    message.messageId = messageId;
+    //    console.log('Сообщение отправленно');
+    //    socket.emit('Девочки', message)
+  //  })
    socket.on('Девочки', function(message) {
        console.log('Пользователь ' + message.userName + ' написал: ' + message.message);
-   })
+  })
 })
 
 io.on('connection', function(socket) {
@@ -36,8 +42,9 @@ io.on('connection', function(socket) {
         messageId ++;
         message.messageId = messageId;
         console.log('-----------------')
-        io.emit('Девочки', message)
-    })
+    console.log(message)
+        socket.broadcast.emit('Девочки', message)
+   })
 })
 
 

@@ -9,7 +9,7 @@ class App extends React.Component {
     super(props);
     this.state = {
       incominMessage: null,
-      chat: null,
+      chat: [],
       chatName: null,
       userName: null,
       isLogin: false,
@@ -19,8 +19,26 @@ class App extends React.Component {
      socket = io('http://localhost:3001');
   };
 
+  componentWillMount() {
+    socket.on('Девочки', (msg) => {
+
+      console.log(msg.userName + msg.message)
+   
+    });
+  }
+
   componentDidUpdate() {
-      console.log(this.state.chat)
+    socket.removeListener();
+    if (this.state.isLogin) { 
+    socket.on('Девочки', (msg) => {
+
+      console.log(msg.userName + msg.message);
+      const newChat = concat(this.state.chat, msg);
+      this.setState({chat: newChat});
+   
+    });
+  }
+      console.log(this.state.chat);
   } 
 
   renderLogin = () => {
@@ -65,7 +83,8 @@ class App extends React.Component {
 
   sendMessage = (event) => {
     event.preventDefault();
-    socket.emit(this.state.chatName, this.state);
+    socket.removeListener();
+    socket.emit('Девочки', this.state);
     socket.on('Девочки', (msg) => {
 
      console.log(msg.userName + msg.message)
