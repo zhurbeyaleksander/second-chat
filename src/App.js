@@ -20,22 +20,15 @@ class App extends React.Component {
   };
 
   componentWillMount() {
-    socket.on('Девочки', (msg) => {
-
-      console.log(msg.userName + msg.message)
-   
-    });
   }
 
   componentDidUpdate() {
-    socket.removeListener();
+    socket.removeAllListeners();
     if (this.state.isLogin) { 
     socket.on('Девочки', (msg) => {
-
       console.log(msg.userName + msg.message);
       const newChat = concat(this.state.chat, msg);
       this.setState({chat: newChat});
-   
     });
   }
       console.log(this.state.chat);
@@ -85,16 +78,31 @@ class App extends React.Component {
     event.preventDefault();
     socket.removeListener();
     socket.emit('Девочки', this.state);
+     const newChat = concat(this.state.chat, this.state);
     socket.on('Девочки', (msg) => {
 
-     console.log(msg.userName + msg.message)
-  
+     console.log(msg.userName + msg.message);
+     this.setState({chat: newChat});
    });
-   this.setState({message: ''})
+   
+   this.setState({
+     message: '',
+     chat: newChat
+    })
+  }
+
+  renderMessages = () => {
+    const {chat} = this.state;
+    const chatMessagers = chat.map((i) => 
+         <tr key={i.messageId}>
+             <th scope="row">{i.userName}</th>
+             <td>{i.message}</td>
+        </tr>
+    );
+    return <React.Fragment>{chatMessagers}</React.Fragment>;
   }
 
   renderChat = () => {
-    const {chat} = this.state;
     return(
       <div className="container">
             <form onSubmit={this.sendMessage}>
@@ -106,14 +114,7 @@ class App extends React.Component {
 </form>
 <table className="table table-striped">
   <tbody>
-    <tr>
-      <th scope="row">Андрэ</th>
-      <td>Привет! </td>
-    </tr>
-    <tr>
-      <th scope="row">Макарэн</th>
-      <td>В componentDidUpdate() можно вызывать setState(), однако его необходимо обернуть в условие, как в примере выше, чтобы не возник бесконечный цикл. Вызов setState() влечет за собой дополнительный рендер, который незаметен для пользователя, но может повлиять на производительность компонента. Вместо «отражения» пропсов в состоянии рекомендуется использовать пропсы напрямую. Подробнее о том, почему копирование пропсов в состояние вызывает баги.</td>
-    </tr>
+    {this.renderMessages()}
   </tbody>
 </table>
       </div>
